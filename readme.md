@@ -5,14 +5,6 @@ A simple framework for using command/query objects to perform data access.  The 
 ####Sample Usage
 
 ```c#
-public class FetchAllUsersQuery : IQuery<IEnumerable<User>>
-{
-    public IEnumerable<User> Execute(IDbConnection db)
-    {
-        return db.Query<User>("select * from [User]");
-    }
-}
-
 public class FetchUserByEmailQuery : IQuery<User>
 {
     private readonly string email;
@@ -25,6 +17,21 @@ public class FetchUserByEmailQuery : IQuery<User>
     public User Execute(IDbConnection db)
     {
         return db.Query<User>("select * from [User] where [Email] = @email", new { email }).FirstOrDefault();
+    }
+}
+
+public class CreateUserCommand : ICommand
+{
+    private readonly User user;
+
+    public CreateUserCommand(User user)
+    {
+        this.user = user;
+    }
+
+    public void Execute(IDbConnection db)
+    {
+        db.Execute("insert into [User] ([Email]) values (@Email)", user);
     }
 }
 
